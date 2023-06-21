@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+}
+
+group 'fotius'
+version '1.0-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_17
+
+sourceSets {
+    integrationTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+    end2endTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestRuntimeOnly.extendsFrom runtimeOnly
+
+    end2endTestImplementation.extendsFrom implementation
+    end2endTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    integrationTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    integrationTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    end2endTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    end2endTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    end2endTestImplementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
+    end2endTestImplementation "io.github.bonigarcia:webdrivermanager:5.3.2"
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed"
+    }
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed"
+    }
+}
+
+task end2endTest(type: Test) {
+    testClassesDirs = sourceSets.end2endTest.output.classesDirs
+    classpath = sourceSets.end2endTest.runtimeClasspath
+    shouldRunAfter test
+
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed"
+    }
+}
+
+check.dependsOn integrationTest
+check.dependsOn end2endTest
